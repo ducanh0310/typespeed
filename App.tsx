@@ -27,7 +27,7 @@ const App: React.FC = () => {
     setFinalStats(null);
     try {
       const { lyrics: fetchedLyrics, sources: fetchedSources } = await fetchLyrics(songTitle);
-      setTextToType(fetchedLyrics.toLowerCase());
+      setTextToType(fetchedLyrics.toLowerCase().replace(/\n/g, ' '));
       setSources(fetchedSources);
       setGameState(GameState.Ready);
     } catch (err) {
@@ -42,7 +42,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleCustomTextStart = useCallback((text: string) => {
-    setTextToType(text);
+    setTextToType(text.replace(/\n/g, ' '));
     setGameState(GameState.Ready);
     setSources([]);
     setError(null);

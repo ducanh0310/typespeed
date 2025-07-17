@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { type GroundingChunk } from "../types";
 
 // Assume process.env.API_KEY is available in the environment
-const API_KEY = "AIzaSyDaZKMMQ27VfU_JEisXMvV2dzg2Tq1U33k";
+const API_KEY = "AIzaSyAyUy70cDKLNOTyxnSLHO8mWYWtHAcn0mg";
 
 if (!API_KEY) {
   console.error("API_KEY is not set in environment variables.");

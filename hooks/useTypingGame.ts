@@ -73,13 +73,26 @@ export const useTypingGame = (textToType: string) => {
       return;
     }
     
+    // Prevent default browser actions for typing keys (e.g., spacebar scrolling)
+    // but allow default for modifier keys and function keys.
+    if (
+        e.key.length === 1 ||
+        e.key === 'Spacebar' ||
+        e.key === 'Enter' ||
+        e.key === 'Tab' ||
+        e.key === 'Backspace'
+    ) {
+        e.preventDefault();
+    }
+    
     // Ignore function keys, control, alt, etc.
-    if (e.key.length > 1 || e.ctrlKey || e.altKey || e.metaKey) {
+    if (e.key.length > 1 && e.key !== 'Spacebar' && e.key !== 'Enter' && e.key !== 'Tab') {
       return;
     }
 
-    // Prevent default browser actions for typing keys (e.g., spacebar scrolling)
-    e.preventDefault();
+    if (e.ctrlKey || e.altKey || e.metaKey) {
+        return;
+    }
 
     if (currentIndex < totalChars) {
       // Case-insensitive check. textToType is already lowercase.

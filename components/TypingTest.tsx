@@ -24,7 +24,7 @@ const Character: React.FC<{
       className={`relative ${getCharColor()} ${isCurrent ? 'bg-slate-700/50 rounded-sm' : ''}`}
     >
       {isCurrent && (
-        <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-cyan-400 animate-pulse" />
+        <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-cyan-400 animate-pulse -translate-x-1/2" />
       )}
       {char === ' ' && isTyped && !isCorrect ? (
         <span className="bg-red-500/50 rounded-sm">&nbsp;</span>
@@ -51,14 +51,22 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
   const inputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const keydownHandler = (e: KeyboardEvent) => handleKeyDown(e);
+    const keydownHandler = (e: KeyboardEvent) => {
+        // Only handle keydown events if the inputRef element is focused
+        if (inputRef.current && document.activeElement === inputRef.current) {
+            handleKeyDown(e);
+        }
+    };
+
     const area = inputRef.current;
     if (area) {
+       area.addEventListener('keydown', keydownHandler);
        area.focus();
     }
-    window.addEventListener('keydown', keydownHandler);
     return () => {
-      window.removeEventListener('keydown', keydownHandler);
+      if (area) {
+        area.removeEventListener('keydown', keydownHandler);
+      }
     };
   }, [handleKeyDown]);
 
@@ -77,25 +85,23 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
   }, [gameState]);
 
   // Corrected auto-scrolling effect that only scrolls on new lines
+  // Auto-scrolling effect to keep the current line in view
   useEffect(() => {
     const container = inputRef.current;
     if (!container || gameState !== GameState.Typing) return;
-
-    const currentCharacterEl = container.children[currentIndex] as HTMLElement;
-    if (!currentCharacterEl) return;
-
-    const { offsetTop, offsetHeight } = currentCharacterEl;
-    const { scrollTop, clientHeight } = container;
-
-    // Scroll down if cursor is past the vertical center
-    if (offsetTop > scrollTop + clientHeight / 2) {
-      container.scrollTop = offsetTop - clientHeight / 2 + offsetHeight;
+  
+    // The 'characters' are wrapped in a fragment, so we need to access the real children
+    // The first child is the "start typing" prompt, so we skip it.
+    const characterElements = Array.from(container.children).slice(1);
+    const currentCharacterEl = characterElements[currentIndex] as HTMLElement;
+  
+    if (currentCharacterEl) {
+      currentCharacterEl.scrollIntoView({
+        block: 'center',
+        inline: 'nearest',
+        behavior: 'smooth',
+      });
     }
-    // Scroll up if cursor is before the vertical center
-    else if (offsetTop < scrollTop + clientHeight / 4) {
-        container.scrollTop = offsetTop - clientHeight / 4 - offsetHeight;
-    }
-
   }, [currentIndex, gameState]);
 
 
@@ -134,7 +140,7 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
         <div
             ref={inputRef}
             tabIndex={0}
-            className="w-full h-72 p-6 bg-slate-800/50 rounded-lg text-2xl/relaxed md:text-3xl/relaxed font-mono tracking-wide overflow-y-auto focus:outline-none focus:ring-2 focus:ring-cyan-500 break-words"
+            className="w-full h-72 p-6 bg-slate-800/50 rounded-lg text-2xl/relaxed md:text-3xl/relaxed font-mono tracking-wide overflow-y-auto focus:outline-none focus:ring-2 focus:ring-cyan-500 break-words whitespace-pre-wrap"
         >
             {gameState === GameState.Ready && (
             <div className="text-slate-400 animate-pulse">Bắt đầu gõ để bắt đầu...</div>
