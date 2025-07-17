@@ -1,0 +1,5 @@
+{
+  "name": "LyricTyper: Kiểm tra tốc độ gõ",
+  "description": "Kiểm tra tốc độ gõ của bạn bằng cách chép lại lời của những bài hát yêu thích. Nhập tên bài hát và chúng tôi sẽ tìm lời để bạn gõ.",
+  "requestFramePermissions": []
+}
