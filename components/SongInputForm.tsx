@@ -5,9 +5,10 @@ import Spinner from './Spinner';
 interface SongInputFormProps {
   onSubmit: (songTitle: string) => void;
   isLoading: boolean;
+  onBack: () => void;
 }
 
-const SongInputForm: React.FC<SongInputFormProps> = ({ onSubmit, isLoading }) => {
+const SongInputForm: React.FC<SongInputFormProps> = ({ onSubmit, isLoading, onBack }) => {
   const [songTitle, setSongTitle] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,6 +43,9 @@ const SongInputForm: React.FC<SongInputFormProps> = ({ onSubmit, isLoading }) =>
           {isLoading ? <Spinner className="w-5 h-5" /> : 'Tìm lời bài hát'}
         </button>
       </form>
+      <button onClick={onBack} className="mt-6 px-6 py-3 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-500 transition-colors">
+        Quay về
+      </button>
     </div>
   );
 };

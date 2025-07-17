@@ -40,9 +40,8 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
     gameState,
     typedText,
     errorIndices,
-    elapsedTime,
+    time,
     wpm,
-    accuracy,
     handleKeyDown,
     resetGame,
     currentIndex,
@@ -64,7 +63,7 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
 
   useEffect(() => {
     if (gameState === GameState.Finished) {
-      onFinish({ wpm, accuracy, time: elapsedTime });
+      onFinish({ wpm, accuracy: 0, time });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState]);
@@ -79,21 +78,23 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
   // Corrected auto-scrolling effect that only scrolls on new lines
   useEffect(() => {
     const container = inputRef.current;
-    if (!container || gameState !== GameState.Typing || currentIndex < 1) return;
+    if (!container || gameState !== GameState.Typing) return;
 
     const currentCharacterEl = container.children[currentIndex] as HTMLElement;
-    const previousCharacterEl = container.children[currentIndex - 1] as HTMLElement;
-    if (!currentCharacterEl || !previousCharacterEl) return;
+    if (!currentCharacterEl) return;
 
-    const currentTop = currentCharacterEl.offsetTop;
-    const previousTop = previousCharacterEl.offsetTop;
+    const { offsetTop, offsetHeight } = currentCharacterEl;
+    const { scrollTop, clientHeight } = container;
 
-    // If the top position has changed, we've moved to a new line.
-    if (currentTop > previousTop) {
-        currentCharacterEl.scrollIntoView({
-            block: 'nearest',
-        });
+    // Scroll down if cursor is past the vertical center
+    if (offsetTop > scrollTop + clientHeight / 2) {
+      container.scrollTop = offsetTop - clientHeight / 2 + offsetHeight;
     }
+    // Scroll up if cursor is before the vertical center
+    else if (offsetTop < scrollTop + clientHeight / 4) {
+        container.scrollTop = offsetTop - clientHeight / 4 - offsetHeight;
+    }
+
   }, [currentIndex, gameState]);
 
 
@@ -121,10 +122,7 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
           {wpm} <span className="text-base text-slate-400 font-normal">WPM</span>
         </div>
         <div className="text-3xl font-bold text-cyan-400">
-          {accuracy}% <span className="text-base text-slate-400 font-normal">Chính xác</span>
-        </div>
-        <div className="text-3xl font-bold text-cyan-400">
-          {elapsedTime.toFixed(1)}s <span className="text-base text-slate-400 font-normal">Thời gian</span>
+          {time}s <span className="text-base text-slate-400 font-normal">Thời gian</span>
         </div>
       </div>
 
@@ -132,7 +130,7 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
         <div
             ref={inputRef}
             tabIndex={0}
-            className="w-full h-72 p-6 bg-slate-800/50 rounded-lg text-2xl/relaxed md:text-3xl/relaxed font-mono tracking-wide overflow-y-auto focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className="w-full h-72 p-6 bg-slate-800/50 rounded-lg text-2xl/relaxed md:text-3xl/relaxed font-mono tracking-wide overflow-y-auto focus:outline-none focus:ring-2 focus:ring-cyan-500 break-words"
         >
             {gameState === GameState.Ready && (
             <div className="text-slate-400 animate-pulse">Bắt đầu gõ để bắt đầu...</div>
@@ -151,15 +149,15 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
        <div className="flex gap-4 mt-2">
             <button
             onClick={resetGame}
-            className="px-6 py-2 bg-slate-700 text-slate-200 font-semibold rounded-lg hover:bg-slate-600 transition-colors"
+            className="px-6 py-2 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-500 transition-colors"
             >
             Thử lại
             </button>
             <button
             onClick={onReset}
-            className="px-6 py-2 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-500 transition-colors"
+            className="px-6 py-2 bg-slate-700 text-slate-200 font-semibold rounded-lg hover:bg-slate-600 transition-colors"
             >
-            Bài hát mới
+            Quay về
             </button>
         </div>
     </div>

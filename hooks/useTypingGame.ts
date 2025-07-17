@@ -7,6 +7,7 @@ export const useTypingGame = (textToType: string) => {
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
+  const [time, setTime] = useState(0);
 
   const totalChars = textToType.length;
   const currentIndex = typedText.length;
@@ -17,11 +18,24 @@ export const useTypingGame = (textToType: string) => {
     setErrorIndices(new Set());
     setStartTime(null);
     setEndTime(null);
+    setTime(0);
   }, []);
 
   useEffect(() => {
     resetGame();
   }, [textToType, resetGame]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (gameState === GameState.Typing) {
+      interval = setInterval(() => {
+        setTime(prevTime => prevTime + 1);
+      }, 1000);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [gameState]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (gameState === GameState.Finished || gameState === GameState.Ready) {
@@ -57,6 +71,9 @@ export const useTypingGame = (textToType: string) => {
       return;
     }
 
+    // Prevent default browser actions for typing keys (e.g., spacebar scrolling)
+    e.preventDefault();
+
     if (currentIndex < totalChars) {
       // Case-insensitive check. textToType is already lowercase.
       if (e.key.toLowerCase() !== textToType[currentIndex]) {
@@ -72,24 +89,18 @@ export const useTypingGame = (textToType: string) => {
     }
   }, [currentIndex, totalChars, gameState, textToType, startTime, errorIndices, resetGame]);
 
-  const elapsedTime = endTime ? (endTime - startTime!) / 1000 : (startTime ? (Date.now() - startTime) / 1000 : 0);
-  
-  // Case-insensitive accuracy calculation
-  const correctChars = typedText.split('').filter((char, index) => {
-    if (index >= textToType.length) return false;
-    return char.toLowerCase() === textToType[index];
-  }).length;
+  const correctChars = typedText
+    .split('')
+    .filter((char, index) => char.toLowerCase() === textToType[index]).length;
 
-  const wpm = startTime && elapsedTime > 0 ? Math.round((typedText.length / 5) / (elapsedTime / 60)) : 0;
-  const accuracy = totalChars > 0 && typedText.length > 0 ? Math.round((correctChars / typedText.length) * 100) : 100;
-  
+  const wpm = time > 0 ? Math.round(correctChars / 5 / (time / 60)) : 0;
+
   return {
     gameState,
     typedText,
     errorIndices,
-    elapsedTime,
+    time,
     wpm,
-    accuracy,
     handleKeyDown,
     resetGame,
     totalChars,
