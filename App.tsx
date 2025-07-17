@@ -79,22 +79,43 @@ const App: React.FC = () => {
 
     if (mode === 'selection') {
       return (
-        <div className="flex flex-col items-center gap-6">
-            <h1 className="text-4xl font-bold text-slate-200">Chọn chế độ</h1>
-          <div className="flex flex-wrap justify-center gap-4">
-            <button onClick={() => setMode('song')} className="px-6 py-3 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-500 transition-colors">
-              Gõ theo lời bài hát
-            </button>
-            <button onClick={() => setMode('custom')} className="px-6 py-3 bg-slate-700 text-slate-200 font-semibold rounded-lg hover:bg-slate-600 transition-colors">
-              Nhập văn bản tùy chỉnh
-            </button>
-            <button onClick={() => handleRandomWordsStart('vi')} className="px-6 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-500 transition-colors">
-              Từ ngẫu nhiên (Tiếng Việt)
-            </button>
-            <button onClick={() => handleRandomWordsStart('en')} className="px-6 py-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-500 transition-colors">
-              Từ ngẫu nhiên (Tiếng Anh)
-            </button>
-          </div>
+        <div className="w-full max-w-2xl text-center">
+            <h1 className="text-6xl md:text-7xl font-extrabold text-white mb-4">
+                Type<span className="text-cyan-400">Speed</span>
+            </h1>
+            <p className="text-slate-400 mb-12 text-xl">
+                Cải thiện tốc độ gõ của bạn với các bài kiểm tra thú vị!
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button
+                    onClick={() => setMode('song')}
+                    className="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-cyan-600 to-blue-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                >
+                    <span className="text-4xl mb-2">🎤</span>
+                    Gõ theo lời bài hát
+                </button>
+                <button
+                    onClick={() => setMode('custom')}
+                    className="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-purple-600 to-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                >
+                    <span className="text-4xl mb-2">✍️</span>
+                    Nhập văn bản tùy chỉnh
+                </button>
+                <button
+                    onClick={() => handleRandomWordsStart('vi')}
+                    className="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-emerald-600 to-green-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                >
+                    <span className="text-4xl mb-2">🇻🇳</span>
+                    Từ ngẫu nhiên (Tiếng Việt)
+                </button>
+                <button
+                    onClick={() => handleRandomWordsStart('en')}
+                    className="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-orange-600 to-red-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                >
+                    <span className="text-4xl mb-2">🇬🇧</span>
+                    Từ ngẫu nhiên (Tiếng Anh)
+                </button>
+            </div>
         </div>
       );
     }

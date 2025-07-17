@@ -45,6 +45,7 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
     handleKeyDown,
     resetGame,
     currentIndex,
+    totalKeyPresses,
   } = useTypingGame(textToType);
 
   const inputRef = useRef<HTMLDivElement>(null);
@@ -123,6 +124,9 @@ const TypingTest: React.FC<TypingTestProps> = ({ textToType, onFinish, onReset }
         </div>
         <div className="text-3xl font-bold text-cyan-400">
           {time}s <span className="text-base text-slate-400 font-normal">Thời gian</span>
+        </div>
+        <div className="text-3xl font-bold text-cyan-400">
+          {totalKeyPresses} <span className="text-base text-slate-400 font-normal">Tổng số lần gõ phím</span>
         </div>
       </div>
 

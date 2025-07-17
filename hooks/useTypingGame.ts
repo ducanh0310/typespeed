@@ -8,6 +8,7 @@ export const useTypingGame = (textToType: string) => {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [time, setTime] = useState(0);
+  const [totalKeyPresses, setTotalKeyPresses] = useState(0);
 
   const totalChars = textToType.length;
   const currentIndex = typedText.length;
@@ -19,6 +20,7 @@ export const useTypingGame = (textToType: string) => {
     setStartTime(null);
     setEndTime(null);
     setTime(0);
+    setTotalKeyPresses(0);
   }, []);
 
   useEffect(() => {
@@ -38,6 +40,11 @@ export const useTypingGame = (textToType: string) => {
   }, [gameState]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // Increment total key presses for any key that affects typing or navigation within the text
+    if (e.key.length === 1 || e.key === 'Backspace' || e.key === ' ') { // Added space to count all relevant keys
+      setTotalKeyPresses(prev => prev + 1);
+    }
+
     if (gameState === GameState.Finished || gameState === GameState.Ready) {
       if (e.key.length === 1 || e.key === 'Backspace') {
         setGameState(GameState.Typing);
@@ -105,5 +112,6 @@ export const useTypingGame = (textToType: string) => {
     resetGame,
     totalChars,
     currentIndex,
+    totalKeyPresses,
   };
 };
